@@ -1,0 +1,11 @@
+{
+  "name": "soliditySapper",
+  "version": "0.1.0",
+  "license": "GPLv3",
+  "scripts": {},
+  "bin": "./dist/soliditySapper.js",
+  "dependencies": {
+    "@types/node": "^9.6.5",
+    "solc": "^0.4.24"
+  }
+}
