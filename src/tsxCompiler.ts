@@ -24,17 +24,6 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath) {
     return (browserifyInstance: BrowserifyInstance) => browserifyInstance
         .plugin(errorify, {})
         .plugin(tsify, tsconfigRelevant)
-        /*.plugin(tsify, {
-            //noImplicitAny: true,
-            //noImplicitReturns: true,
-            target: 'es5',
-            moduleResolution: 'node',
-            jsx: 'react',
-            jsxFactory: 'h',
-            //traceResolution: true, // use this to debug npm dependencies
-
-            lib: ["es2017", "dom"]
-        })*/
         .plugin(cssModulesify, {
             rootDir: __dirname,
             output: outputDir + '/' + outputFile + '.css',

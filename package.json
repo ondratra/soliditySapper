@@ -4,8 +4,10 @@
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
-    "test": "nodejs ./dist/index.js solBuild tests/Test.sol dist && nodejs ./dist/index.js tsxBuild tests test.tsx dist"
+    "test": "nodejs ./dist/index.js solBuild tests/Test.sol dist && nodejs ./dist/index.js tsxBuild tests test.tsx dist",
+    "postinstall": "$_ build"
   },
+  "main": "./dist/index.js",
   "bin": "./dist/index.js",
   "dependencies": {
     "@types/node": "^9.6.5",

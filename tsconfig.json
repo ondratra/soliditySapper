@@ -8,7 +8,8 @@
         "jsxFactory": "h",
         "lib": ["es2017", "dom"],
 
-        "outDir": "./dist/"
+        "outDir": "./dist/",
+        "declaration": true
     },
     "files": ["src/index.ts"]
 }
