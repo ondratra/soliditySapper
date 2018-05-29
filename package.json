@@ -2,10 +2,23 @@
   "name": "soliditySapper",
   "version": "0.1.0",
   "license": "GPLv3",
-  "scripts": {},
-  "bin": "./dist/soliditySapper.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "nodejs ./dist/index.js solBuild tests/Test.sol dist && nodejs ./dist/index.js tsxBuild tests test.tsx dist"
+  },
+  "bin": "./dist/index.js",
   "dependencies": {
     "@types/node": "^9.6.5",
-    "solc": "^0.4.24"
+    "@types/yargs": "^11.0.0",
+    "browserify": "^16.2.2",
+    "css-modulesify": "^0.28.0",
+    "errorify": "^0.3.1",
+    "postcss-cssnext": "^3.1.0",
+    "preact": "^8.2.9",
+    "solc": "^0.4.24",
+    "tsify": "^4.0.0",
+    "typescript": "^2.8.3",
+    "watchify": "^3.11.0",
+    "yargs": "^11.0.0"
   }
 }

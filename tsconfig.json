@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "target": "es5",
+        "moduleResolution": "node",
+        "jsx": "react",
+        "jsxFactory": "h",
+        "lib": ["es2017", "dom"],
+
+        "outDir": "./dist/"
+    },
+    "files": ["src/index.ts"]
+}

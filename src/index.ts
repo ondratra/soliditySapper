@@ -1,7 +1,13 @@
-import {build as tsxBuild, watch as tsxWatch} from '../tsxCompilers.ts';
+import {build as tsxBuild, watch as tsxWatch} from './tsxCompiler';
+import solBuild from './solidityCompiler';
+//import yargsa from 'yargs';
 
+const yargsLib = require('yargs');
 
-const tsxBuildWatchArgs = (yargs) => {
+// workaround for current version of package @types/yargs not exporting all interfaces
+type yargArguments = any;
+
+const tsxBuildWatchArgs = (yargs: yargArguments) => {
     yargs
         .positional('inputRootDir', {
             type: 'string',
@@ -17,11 +23,11 @@ const tsxBuildWatchArgs = (yargs) => {
         });
 };
 
-const solWatchWrapper = (yargs) => {
-    build(yargs.inputRootDir, yargs.inputFile, yargs.outputDirectory)
+const solBuildWrapper = (yargs: yargArguments) => {
+    solBuild(yargs.solidityInputFile, yargs.outputDirectory)
 };
 
-let solBuildArgs = (yargs) => {
+let solBuildArgs = (yargs: yargArguments) => {
     yargs
         .positional('solidityInputFile', {
             type: 'string',
@@ -33,15 +39,31 @@ let solBuildArgs = (yargs) => {
         })
 };
 
-const tsxWrapper = (func) => (yargs) => {
+const tsxWrapper = (func: {(a: string, b: string, c: string): void}) => (yargs: yargArguments) => {
     func(yargs.inputRootDir, yargs.inputFile, yargs.outputDirectory);
 };
 
+const isScriptCalledDirectly = () => require.main === module;
 
-const argv = yargsLib
-    .usage('$0 <cmd> [args]')
-    .command('solBuild <solidityInputFile> <outputDirectory>', 'compile solidity contract', solBuildArgs, solBuildWrapper)
-    .command('tsxBuild <inputRootDir> <inputFile> <outputDirectory>', 'build project', tsxBuildWatchArgs, tsxWrapper(tsxBuild))
-    .command('tsxWatch <inputRootDir> <inputFile> <outputDirectory>', 'watches project an rebuild on changes', tsxBuildWatchArgs, tsxWrapper(tsxWatch))
-    .help()
-    .argv;
+
+/////////////////// MAIN ///////////////////////////////////////////////////////
+
+(() => {
+    if (!isScriptCalledDirectly()) {
+        return;
+    }
+
+    const argv = yargsLib
+        .usage('$0 <cmd> [args]')
+        .command('solBuild <solidityInputFile> <outputDirectory>', 'compile solidity contract', solBuildArgs, solBuildWrapper)
+        .command('tsxBuild <inputRootDir> <inputFile> <outputDirectory>', 'build project', tsxBuildWatchArgs, tsxWrapper(tsxBuild))
+        .command('tsxWatch <inputRootDir> <inputFile> <outputDirectory>', 'watches project an rebuild on changes', tsxBuildWatchArgs, tsxWrapper(tsxWatch))
+        .strict()
+        .help()
+        .argv;
+
+    // show help when no parameters passed
+    if (!argv._[0]) {
+        yargsLib.showHelp();
+    }
+})();

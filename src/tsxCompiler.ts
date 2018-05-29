@@ -3,6 +3,10 @@
 // run:
 // node --harmony-async-await build.js
 
+import {FilePath, readFile} from './misc';
+
+type BrowserifyInstance = any;
+
 const path = require('path');
 const fs = require('fs');
 const browserify = require('browserify');
@@ -14,10 +18,13 @@ const yargsLib = require('yargs');
 
 
 /////////////////// Browserify plugins /////////////////////////////////////////
-function pluginsCommon(outputDir, outputFile) {
-    return (browserifyInstance) => browserifyInstance
+function pluginsCommon(outputDir: FilePath, outputFile: FilePath) {
+    const tsconfigRelevant = JSON.parse(readFile(__dirname + '/../tsconfig.json')).compilerOptions;
+
+    return (browserifyInstance: BrowserifyInstance) => browserifyInstance
         .plugin(errorify, {})
-        .plugin(tsify, {
+        .plugin(tsify, tsconfigRelevant)
+        /*.plugin(tsify, {
             //noImplicitAny: true,
             //noImplicitReturns: true,
             target: 'es5',
@@ -27,7 +34,7 @@ function pluginsCommon(outputDir, outputFile) {
             //traceResolution: true, // use this to debug npm dependencies
 
             lib: ["es2017", "dom"]
-        })
+        })*/
         .plugin(cssModulesify, {
             rootDir: __dirname,
             output: outputDir + '/' + outputFile + '.css',
@@ -37,8 +44,8 @@ function pluginsCommon(outputDir, outputFile) {
         });
 }
 
-function pluginsWatchify(outputDir, outputFile) {
-    return (browserifyInstance) => browserifyInstance.plugin(watchify, {
+function pluginsWatchify(outputDir: FilePath, outputFile: FilePath) {
+    return (browserifyInstance: BrowserifyInstance) => browserifyInstance.plugin(watchify, {
         ignoreWatch: ['**/node_modules/**']
     }).on('update', function() {
         console.log('rebundling')
@@ -49,14 +56,13 @@ function pluginsWatchify(outputDir, outputFile) {
 
 
 /////////////////// Browserify init and bundle /////////////////////////////////
-function browserifyBundle(outputDir, outputFile) {
-
-    return (browserifyInstance) => browserifyInstance
+function browserifyBundle(outputDir: FilePath, outputFile: FilePath) {
+    return (browserifyInstance: BrowserifyInstance) => browserifyInstance
         .bundle()
         .pipe(fs.createWriteStream(outputDir + '/' + outputFile + '.js'));
 }
 
-async function getBrowserify(inputRootDir, sourceFile) {
+async function getBrowserify(inputRootDir: FilePath, sourceFile: FilePath) {
     return browserify({
         debug: true,
         //entries: [inputRootDir + "/" + sourceFile],
@@ -71,7 +77,7 @@ async function getBrowserify(inputRootDir, sourceFile) {
     //return pluginsCommon(browserifyInstance);
 }
 
-export function build(inputRootDir, inputFile, outputDir, ) {
+export function build(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath) {
     const outputFile = path.basename(inputFile, path.extname(inputFile));
 
     return getBrowserify(inputRootDir, inputFile)
@@ -79,7 +85,7 @@ export function build(inputRootDir, inputFile, outputDir, ) {
         .then(browserifyBundle(outputDir, outputFile));
 }
 
-export function watch(inputRootDir, inputFile, outputDir) {
+export function watch(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath) {
     const outputFile = path.basename(inputFile, path.extname(inputFile));
 
     return getBrowserify(inputRootDir, inputFile)

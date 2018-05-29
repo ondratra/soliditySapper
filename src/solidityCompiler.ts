@@ -1,7 +1,9 @@
+import {FilePath, readFile, writeFile, fileExists} from './misc';
+
 const solc = require('solc');
-const fs = require('fs');
 const path = require('path');
 
+/*
 const baseArgs = 2;
 const fileSettings = {
     encoding: 'utf8'
@@ -11,30 +13,22 @@ if (process.argv.length < baseArgs + 2) {
     console.log("Usage: \n" + process.argv[1] + ' pathToFileToCompile outputFolder');
     process.exit(1);
 }
+*/
 
-
-const readFile = (path) => {
-    return fs.readFileSync(path, fileSettings).toString();
-};
-
-const writeFile = (path, data) => {
-    return fs.writeFileSync(path, data, fileSettings);
-};
-
-
+type AbiCollection = any;
 
 // basicly this is autoloading - it's needed because solcjs doesn't resolve solidity files by itself
-const findImports = (rootDir, fileExtensions) => (importPath) => {
-    let resolveFilename = (filePath) => {
-        let tmpPath = rootDir + '/' + filePath + fileExtensions;
+const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: FilePath) => {
+    let resolveFilename = (filePath: FilePath) => {
+        let tmpPath = rootDir + '/' + filePath + fileExtension;
         console.log(tmpPath)
-        if (fs.existsSync(tmpPath)) {
+        if (fileExists(tmpPath)) {
             return tmpPath;
         }
 
         // TODO: make generic autoloading
         tmpPath = __dirname + '/node_modules/' + filePath;
-        if (filePath.startsWith('zeppelin-solidity') && fs.existsSync(tmpPath)) {
+        if (filePath.startsWith('zeppelin-solidity') && fileExists(tmpPath)) {
             return tmpPath;
         }
 
@@ -53,7 +47,7 @@ const findImports = (rootDir, fileExtensions) => (importPath) => {
 };
 
 
-const compileContracts = (sourcePath, contractName) => {
+const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
     let sourceDirectory = path.dirname(sourcePath);
     let inputSource = {
         [contractName + '.sol']: readFile(sourcePath),
@@ -72,18 +66,15 @@ const compileContracts = (sourcePath, contractName) => {
     return compiled;
 };
 
-const createAbi = (compiledContracts) => {
+const createAbi = (compiledContracts: AbiCollection) => {
     return Object.keys(compiledContracts.contracts).reduce((accumulator, key) => {
         let tmp = key.split(':');
         accumulator[tmp[tmp.length - 1]] = compiledContracts.contracts[key].interface;
         return accumulator;
-    }, {});
+    }, {} as AbiCollection);
 };
 
-(() => {
-    const sourcePath = process.argv[2];
-    const outputFolder = process.argv[3];
-
+export default function solidityCompiler(sourcePath: FilePath, outputFolder: FilePath) {
     let contractName = path.basename(sourcePath, path.extname(sourcePath));
 
     let compiledContracts = compileContracts(sourcePath, contractName);
@@ -91,4 +82,10 @@ const createAbi = (compiledContracts) => {
 
     writeFile(outputFolder + '/' + contractName + '.json', JSON.stringify(compiledContracts, null, 4));
     writeFile(outputFolder + '/' + contractName + '_abi.json', JSON.stringify(abis, null, 4));
+}
+
+/*
+(() => {
+    main(process.argv[2], process.argv[3])
 })();
+*/
