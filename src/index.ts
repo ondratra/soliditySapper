@@ -1,4 +1,4 @@
-import {build as tsxBuild, watch as tsxWatch} from './tsxCompiler';
+import {build as tsxBuild, watch as tsxWatch, BuildWatchTsxOptions} from './tsxCompiler';
 import solBuild from './solidityCompiler';
 //import yargsa from 'yargs';
 
@@ -46,7 +46,7 @@ const tsxBuildWatchArgs = (yargs: yargArguments) => {
 };
 
 interface BuildWatchTsx {
-    (a: string, b: string, c: string, d: {[key: string]: string}): void;
+    (a: string, b: string, c: string, d: BuildWatchTsxOptions): void;
 }
 const tsxWrapper = (func: BuildWatchTsx) => (yargs: yargArguments) => {
     let tmp = {

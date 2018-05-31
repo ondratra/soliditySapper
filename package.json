@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "test": "nodejs ./dist/index.js solBuild tests/Test.sol dist && nodejs ./dist/index.js tsxBuild tests test.tsx dist",
-    "postinstall": "$_ build"
+    "postinstall": "tsc"
   },
   "main": "./dist/index.js",
   "bin": "./dist/index.js",

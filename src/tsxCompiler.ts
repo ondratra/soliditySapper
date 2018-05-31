@@ -18,8 +18,9 @@ const yargsLib = require('yargs');
 
 
 /////////////////// Browserify plugins /////////////////////////////////////////
-function pluginsCommon(outputDir: FilePath, outputFile: FilePath) {
-    const tsconfigRelevant = JSON.parse(readFile(__dirname + '/../tsconfig.json')).compilerOptions;
+function pluginsCommon(outputDir: FilePath, outputFile: FilePath, tsconfig: FilePath = "") {
+    tsconfig = tsconfig || __dirname + '/../tsconfig.json';
+    const tsconfigRelevant = JSON.parse(readFile(tsconfig)).compilerOptions;
 
     return (browserifyInstance: BrowserifyInstance) => browserifyInstance
         .plugin(errorify, {})
@@ -66,19 +67,23 @@ async function getBrowserify(inputRootDir: FilePath, sourceFile: FilePath) {
     //return pluginsCommon(browserifyInstance);
 }
 
-export function build(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath) {
+export interface BuildWatchTsxOptions {
+    tsconfig: FilePath;
+}
+
+export function build(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: BuildWatchTsxOptions) {
     const outputFile = path.basename(inputFile, path.extname(inputFile));
 
     return getBrowserify(inputRootDir, inputFile)
-        .then(pluginsCommon(outputDir, outputFile))
+        .then(pluginsCommon(outputDir, outputFile, options.tsconfig))
         .then(browserifyBundle(outputDir, outputFile));
 }
 
-export function watch(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath) {
+export function watch(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: BuildWatchTsxOptions) {
     const outputFile = path.basename(inputFile, path.extname(inputFile));
 
     return getBrowserify(inputRootDir, inputFile)
-        .then(pluginsCommon(outputDir, outputFile))
+        .then(pluginsCommon(outputDir, outputFile, options.tsconfig))
         .then(pluginsWatchify(outputDir, outputFile))
         .then(browserifyBundle(outputDir, outputFile));
 }
