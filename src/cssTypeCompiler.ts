@@ -1,5 +1,6 @@
 const DtsCreator = require('typed-css-modules');
-const chokidar = require('chokidar')
+const chokidar = require('chokidar');
+const glob = require('glob');
 
 const globSuffix = '/**/*.css';
 
@@ -21,7 +22,6 @@ export function build(srcDir: string, options = {}) {
         srcDir
     });
 
-    const glob = require('glob');
     glob(srcDir + globSuffix, {}, (error: any, files: string[]) => files.forEach(writeFile(dtsCreator)));
 }
 
