@@ -1,5 +1,6 @@
 
 import {h, render, Component} from 'preact';
+import * as styles from './test.css';
 
 class Main extends Component<{}, {}> {
 

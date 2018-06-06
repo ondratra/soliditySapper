@@ -4,7 +4,7 @@
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
-    "test": "nodejs ./dist/index.js solBuild tests/Test.sol dist && nodejs ./dist/index.js tsxBuild tests test.tsx dist",
+    "test": "nodejs ./dist/index.js solBuild tests/Test.sol dist && nodejs ./dist/index.js cssTypeBuild tests && nodejs ./dist/index.js tsxBuild tests test.tsx dist",
     "postinstall": "tsc"
   },
   "main": "./dist/index.js",
@@ -19,6 +19,7 @@
     "preact": "^8.2.9",
     "solc": "^0.4.24",
     "tsify": "^4.0.0",
+    "typed-css-modules": "^0.3.4",
     "typescript": "^2.8.3",
     "watchify": "^3.11.0",
     "yargs": "^11.0.0"

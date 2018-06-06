@@ -1,13 +1,17 @@
 import {build as tsxBuild, watch as tsxWatch, BuildWatchTsxOptions} from './tsxCompiler';
-import solBuild from './solidityCompiler';
+import {build as solBuild} from './solidityCompiler';
+import {build as cssTypeBuild, watch as cssTypeWatch, BuildWatchCssTypeOptions} from './cssTypeCompiler';
 //import yargsa from 'yargs';
 
-export {tsxBuild, tsxWatch, solBuild};
+export {tsxBuild, tsxWatch, solBuild, cssTypeBuild, cssTypeWatch};
 
 const yargsLib = require('yargs');
 
 // workaround for current version of package @types/yargs not exporting all interfaces
 type yargArguments = any;
+
+
+/////////////////// Solidity ///////////////////////////////////////////////////
 
 const solBuildWrapper = (yargs: yargArguments) => {
     solBuild(yargs.solidityInputFile, yargs.outputDirectory)
@@ -24,6 +28,9 @@ let solBuildArgs = (yargs: yargArguments) => {
             describe: 'path to your .tsx file'
         })
 };
+
+
+/////////////////// tsx ////////////////////////////////////////////////////////
 
 const tsxBuildWatchArgs = (yargs: yargArguments) => {
     yargs
@@ -55,10 +62,30 @@ const tsxWrapper = (func: BuildWatchTsx) => (yargs: yargArguments) => {
     func(yargs.inputRootDir, yargs.inputFile, yargs.outputDirectory, tmp);
 };
 
-const isScriptCalledDirectly = () => require.main === module;
+
+/////////////////// CSS types //////////////////////////////////////////////////
+
+const cssTypeBuildWatchArgs = (yargs: yargArguments) => {
+    yargs
+        .positional('inputRootDir', {
+            type: 'string',
+            describe: 'root directory of source codes'
+        })
+};
+
+interface BuildWatchCssType {
+    (a: string, b: BuildWatchCssTypeOptions): void;
+}
+const cssTypeWrapper = (func: BuildWatchCssType) => (yargs: yargArguments) => {
+    let tmp = {
+    };
+    func(yargs.inputRootDir, tmp);
+};
 
 
 /////////////////// MAIN ///////////////////////////////////////////////////////
+
+const isScriptCalledDirectly = () => require.main === module;
 
 (() => {
     if (!isScriptCalledDirectly()) {
@@ -68,8 +95,10 @@ const isScriptCalledDirectly = () => require.main === module;
     const argv = yargsLib
         .usage('$0 <cmd> [args]')
         .command('solBuild <solidityInputFile> <outputDirectory> [options]', 'compile solidity contract', solBuildArgs, solBuildWrapper)
-        .command('tsxBuild <inputRootDir> <inputFile> <outputDirectory> [options]', 'build project', tsxBuildWatchArgs, tsxWrapper(tsxBuild))
-        .command('tsxWatch <inputRootDir> <inputFile> <outputDirectory> [options]', 'watches project an rebuild on changes', tsxBuildWatchArgs, tsxWrapper(tsxWatch))
+        .command('tsxBuild <inputRootDir> <inputFile> <outputDirectory> [options]', 'build GUI', tsxBuildWatchArgs, tsxWrapper(tsxBuild))
+        .command('tsxWatch <inputRootDir> <inputFile> <outputDirectory> [options]', 'watch project an rebuild on changes', tsxBuildWatchArgs, tsxWrapper(tsxWatch))
+        .command('cssTypeBuild <inputRootDir> [options]', 'build css TS type definitions', cssTypeBuildWatchArgs, cssTypeWrapper(cssTypeBuild))
+        .command('cssTypeWatch <inputRootDir> [options]', 'watch css TS type definitions', cssTypeBuildWatchArgs, cssTypeWrapper(cssTypeWatch))
         .strict()
         .help()
         .argv;

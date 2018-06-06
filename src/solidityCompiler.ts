@@ -74,7 +74,7 @@ const createAbi = (compiledContracts: AbiCollection) => {
     }, {} as AbiCollection);
 };
 
-export default function solidityCompiler(sourcePath: FilePath, outputFolder: FilePath) {
+export function build(sourcePath: FilePath, outputFolder: FilePath) {
     let contractName = path.basename(sourcePath, path.extname(sourcePath));
 
     let compiledContracts = compileContracts(sourcePath, contractName);
