@@ -3,7 +3,7 @@ import {build as solBuild, watch as solWatch} from './solidityCompiler';
 import {build as cssTypeBuild, watch as cssTypeWatch, BuildWatchCssTypeOptions} from './cssTypeCompiler';
 //import yargsa from 'yargs';
 
-export {tsxBuild, tsxWatch, solBuild, cssTypeBuild, cssTypeWatch};
+export {tsxBuild, tsxWatch, solBuild, solWatch, cssTypeBuild, cssTypeWatch};
 
 const yargsLib = require('yargs');
 
