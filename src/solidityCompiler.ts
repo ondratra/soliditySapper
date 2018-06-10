@@ -18,7 +18,7 @@ if (process.argv.length < baseArgs + 2) {
 
 type AbiCollection = any;
 
-const globSuffix = '/**/*.css';
+const globSuffix = '/**/*.sol';
 
 // basicly this is autoloading - it's needed because solcjs doesn't resolve solidity files by itself
 const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: FilePath) => {
@@ -93,9 +93,9 @@ export function build(sourcePath: FilePath, outputFolder: FilePath) {
     return outputFiles;
 }
 
-export function watch(sourcePath: FilePath, outputFolder: FilePath) {
+export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFolder: FilePath) {
 
-    let watcher = chokidar.watch([sourcePath + globSuffix])
+    let watcher = chokidar.watch([watchDirectory + globSuffix])
         .on('add', build(sourcePath, outputFolder))
         .on('change', build(sourcePath, outputFolder));
 
