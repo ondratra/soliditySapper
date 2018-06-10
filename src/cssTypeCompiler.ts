@@ -22,7 +22,7 @@ export function build(srcDir: string, options = {}) {
         srcDir
     });
 
-    glob(srcDir + globSuffix, {}, (error: any, files: string[]) => files.forEach(writeFile(dtsCreator)));
+    return glob(srcDir + globSuffix, {}, (error: any, files: string[]) => files.forEach(writeFile(dtsCreator)));
 }
 
 export function watch(srcDir: string, options = {}) {

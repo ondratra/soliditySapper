@@ -80,8 +80,14 @@ export function build(sourcePath: FilePath, outputFolder: FilePath) {
     let compiledContracts = compileContracts(sourcePath, contractName);
     let abis = createAbi(compiledContracts);
 
-    writeFile(outputFolder + '/' + contractName + '.json', JSON.stringify(compiledContracts, null, 4));
-    writeFile(outputFolder + '/' + contractName + '_abi.json', JSON.stringify(abis, null, 4));
+    let outputFiles = [
+        outputFolder + '/' + contractName + '.json',
+        outputFolder + '/' + contractName + '_abi.json'
+    ];
+    writeFile(outputFiles[0], JSON.stringify(compiledContracts, null, 4));
+    writeFile(outputFiles[1], JSON.stringify(abis, null, 4));
+
+    return outputFiles;
 }
 
 /*
