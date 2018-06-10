@@ -96,8 +96,8 @@ export function build(sourcePath: FilePath, outputFolder: FilePath) {
 export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFolder: FilePath) {
 
     let watcher = chokidar.watch([watchDirectory + globSuffix])
-        .on('add', build(sourcePath, outputFolder))
-        .on('change', build(sourcePath, outputFolder));
+        .on('add', () => build(sourcePath, outputFolder))
+        .on('change', () => build(sourcePath, outputFolder));
 
     return watcher;
 }
