@@ -1,5 +1,5 @@
 import {build as tsxBuild, watch as tsxWatch, BuildWatchTsxOptions} from './tsxCompiler';
-import {build as solBuild} from './solidityCompiler';
+import {build as solBuild, watch as solWatch} from './solidityCompiler';
 import {build as cssTypeBuild, watch as cssTypeWatch, BuildWatchCssTypeOptions} from './cssTypeCompiler';
 //import yargsa from 'yargs';
 
