@@ -29,9 +29,8 @@ const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: F
             return tmpPath;
         }
 
-        // TODO: make generic autoloading
-        tmpPath = __dirname + '/node_modules/' + filePath;
-        if (filePath.startsWith('zeppelin-solidity') && fileExists(tmpPath)) {
+        tmpPath = 'node_modules/' + filePath + '.sol';
+        if (!filePath.startsWith('.') && fileExists(tmpPath)) {
             return tmpPath;
         }
 
