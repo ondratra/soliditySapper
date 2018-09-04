@@ -32,16 +32,11 @@ const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: F
             return null
         }
 
-        const foundPath = module.paths.reduce((accumulator, basePath) => {
-            const tmpPath = basePath + '/' + filePath + '.sol'
-            return accumulator || (fileExists(tmpPath) ? tmpPath : null)
-        }, null)
-
-        if (foundPath) {
-            return foundPath
+        try {
+            return require.resolve(filePath + '.sol')
+        } catch (e) {
+            return null
         }
-
-        return null;
     }
 
 
