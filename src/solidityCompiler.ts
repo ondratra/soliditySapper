@@ -24,14 +24,21 @@ const globSuffix = '/**/*.sol';
 const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: FilePath) => {
     let resolveFilename = (filePath: FilePath) => {
         let tmpPath = rootDir + '/' + filePath + fileExtension;
-        console.log(tmpPath)
         if (fileExists(tmpPath)) {
             return tmpPath;
         }
 
-        tmpPath = 'node_modules/' + filePath + '.sol';
-        if (!filePath.startsWith('.') && fileExists(tmpPath)) {
-            return tmpPath;
+        if (filePath.startsWith('.')) { // local file not found?
+            return null
+        }
+
+        const foundPath = module.paths.reduce((accumulator, basePath) => {
+            const tmpPath = basePath + '/' + filePath + '.sol'
+            return accumulator || (fileExists(tmpPath) ? tmpPath : null)
+        }, null)
+
+        if (foundPath) {
+            return foundPath
         }
 
         return null;
