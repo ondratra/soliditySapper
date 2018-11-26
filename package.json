@@ -17,11 +17,13 @@
     "errorify": "^0.3.1",
     "postcss-cssnext": "^3.1.0",
     "preact": "^8.2.9",
-    "solc": "^0.4.24",
     "tsify": "^4.0.0",
     "typed-css-modules": "^0.3.4",
     "typescript": "^2.8.3",
     "watchify": "^3.11.0",
     "yargs": "^11.0.0"
+  },
+  "peerDependencies": {
+    "solc": ">=0.4.24"
   }
 }
