@@ -53,13 +53,24 @@ const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: F
 
 const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
     let sourceDirectory = path.dirname(sourcePath);
-    let inputSource = {
-        [contractName + '.sol']: readFile(sourcePath),
+    let input = {
+        language: 'Solidity',
+        sources: {
+            [contractName]: {
+                content: readFile(sourcePath)
+            }
+        },
+        settings: {
+            outputSelection: {
+                "*": {
+                    "*": [ "abi", "evm.bytecode" ]
+                }
+            }
+        }
     }
 
-    let compiled = solc.compile({sources: inputSource}, 1, findImports(sourceDirectory, '.sol'));
-
-    let contract = compiled.contracts[contractName + '.sol:' + contractName];
+    let compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory, '.sol')));
+    let contract = compiled.contracts[contractName] && compiled.contracts[contractName][contractName];
 
     if(!contract) {
         console.log(compiled)
@@ -71,11 +82,13 @@ const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
 };
 
 const createAbi = (compiledContracts: AbiCollection) => {
-    return Object.keys(compiledContracts.contracts).reduce((accumulator, key) => {
-        let tmp = key.split(':');
-        accumulator[tmp[tmp.length - 1]] = compiledContracts.contracts[key].interface;
-        return accumulator;
-    }, {} as AbiCollection);
+    return Object.keys(compiledContracts.contracts).reduce((accumulator, fileKey) => {
+        Object.keys(compiledContracts.contracts[fileKey]).map(nameKey => {
+            accumulator[nameKey] = JSON.stringify(compiledContracts.contracts[fileKey][nameKey].abi);
+        })
+
+        return accumulator
+    }, {} as AbiCollection)
 };
 
 export function build(sourcePath: FilePath, outputFolder: FilePath) {
