@@ -23,7 +23,7 @@ const globSuffix = '/**/*.sol';
 // basicly this is autoloading - it's needed because solcjs doesn't resolve solidity files by itself
 const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: FilePath) => {
     let resolveFilename = (filePath: FilePath) => {
-        let tmpPath = rootDir + '/' + filePath + fileExtension;
+        let tmpPath = rootDir + '/' + filePath + (filePath.endsWith(fileExtension) ? '' : fileExtension);
         if (fileExists(tmpPath)) {
             return tmpPath;
         }
