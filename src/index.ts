@@ -1,9 +1,10 @@
 import {build as tsxBuild, watch as tsxWatch, BuildWatchTsxOptions} from './tsxCompiler';
 import {build as solBuild, watch as solWatch} from './solidityCompiler';
+import {build as solConcatBuild} from './solidityConcat'
 import {build as cssTypeBuild, watch as cssTypeWatch, BuildWatchCssTypeOptions} from './cssTypeCompiler';
 //import yargsa from 'yargs';
 
-export {tsxBuild, tsxWatch, solBuild, solWatch, cssTypeBuild, cssTypeWatch};
+export {tsxBuild, tsxWatch, solBuild, solWatch, solConcatBuild, cssTypeBuild, cssTypeWatch};
 
 const yargsLib = require('yargs');
 
@@ -18,6 +19,24 @@ const solBuildWrapper = (yargs: yargArguments) => {
 };
 
 let solBuildArgs = (yargs: yargArguments) => {
+    yargs
+        .positional('solidityInputFile', {
+            type: 'string',
+            describe: 'root directory of source codes'
+        })
+        .positional('outputDirectory', {
+            type: 'string',
+            describe: 'path to your .tsx file'
+        })
+};
+
+
+/////////////////// Solidity Concat ////////////////////////////////////////////
+const solConcatWrapper = async (yargs: yargArguments) => {
+    await solConcatBuild(yargs.solidityInputFile, yargs.outputDirectory)
+}
+
+let solConcatArgs = (yargs: yargArguments) => {
     yargs
         .positional('solidityInputFile', {
             type: 'string',
@@ -94,6 +113,7 @@ const isScriptCalledDirectly = () => require.main === module;
 
     const argv = yargsLib
         .usage('$0 <cmd> [args]')
+        .command('solConcat <solidityInputFile> <outputDirectory> [options]', 'create one solidity file from solidity source code including imports', solConcatArgs, solConcatWrapper)
         .command('solBuild <solidityInputFile> <outputDirectory> [options]', 'compile solidity contract', solBuildArgs, solBuildWrapper)
         .command('tsxBuild <inputRootDir> <inputFile> <outputDirectory> [options]', 'build GUI', tsxBuildWatchArgs, tsxWrapper(tsxBuild))
         .command('tsxWatch <inputRootDir> <inputFile> <outputDirectory> [options]', 'watch project an rebuild on changes', tsxBuildWatchArgs, tsxWrapper(tsxWatch))

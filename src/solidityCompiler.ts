@@ -1,8 +1,9 @@
 import {FilePath, readFile, writeFile, fileExists} from './misc';
 
-const solc = require('solc');
-const path = require('path');
-const chokidar = require('chokidar');
+//import * as solc from 'solc'
+const solc = require('solc')
+import * as path from 'path'
+import * as chokidar from 'chokidar'
 
 /*
 const baseArgs = 2;
@@ -70,7 +71,7 @@ const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
     }
 
     let compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory, '.sol')));
-    let contract = compiled.contracts[contractName] && compiled.contracts[contractName][contractName];
+    let contract = compiled.contracts && compiled.contracts[contractName];
 
     if(!contract) {
         console.log(compiled)
