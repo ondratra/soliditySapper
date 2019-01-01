@@ -81,7 +81,7 @@ async function searchForImports(filePath: FilePath): Promise<IImportResults> {
         importLines.push(matchOne[1])
     }
 
-    const {usedFiles, code: importCode} = await importLines.reduce(importLinesReducer(filePath), {usedFiles: {}, code: ''})
+    const {usedFiles, code: importCode} = await importLines.reduce(importLinesReducer(filePath), Promise.resolve({usedFiles: {}, code: ''}))
 
     const resultCode = importCode + content.replace(importRegex, '')
 
