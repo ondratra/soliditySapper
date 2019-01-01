@@ -1,8 +1,6 @@
 import {FilePath, readFile, writeFile, fileExists} from './misc'
 import * as path from 'path'
 import * as chokidar from 'chokidar'
-//import * as matchAll from 'string.prototype.matchall' // shim for regexp matchAll functionality
-const matchAll = require('string.prototype.matchall') // shim for regexp matchAll functionality
 
 const globSuffix = '/**/*.sol';
 
@@ -48,18 +46,13 @@ async function findSolidityFile(relativeFolder: FilePath, importText: string, fi
 const importLinesReducer = (dependentFilePath: FilePath) => async (accumulatorPromise: Promise<IImportResults>, item: string): Promise<IImportResults> => {
     const accumulator = await accumulatorPromise
     const filesFolder = path.dirname(dependentFilePath)
-console.log('asi bus', filesFolder)
+
     const importPath = await findSolidityFile(filesFolder, item)
 
     if (accumulator.usedFiles[importPath]) {
         return accumulator
     }
-/*
-    const file = readFile(importPath)
-    if (file) {
-        throw `Could not found import '${item}' requested in '${filePath}`
-    }
-*/
+
     // TODO: handle case when multiple contracts are in the same file
     // but not all of them are used in file requesting them (tree-shaking)
 
@@ -77,7 +70,6 @@ console.log('asi bus', filesFolder)
 }
 
 async function searchForImports(filePath: FilePath): Promise<IImportResults> {
-console.log('tryingToRead', filePath)
     const content = readFile(filePath)
     const importRegex = /^import ['"](.*)['"];$/mg
 
@@ -88,7 +80,6 @@ console.log('tryingToRead', filePath)
     while ((matchOne = importRegex.exec(content)) !== null) {
         importLines.push(matchOne[1])
     }
-    //console.log('...........', JSON.stringify(importLines, null, 4))
 
     const {usedFiles, code: importCode} = await importLines.reduce(importLinesReducer(filePath), {usedFiles: {}, code: ''})
 
