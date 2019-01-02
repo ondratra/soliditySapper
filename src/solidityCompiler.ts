@@ -5,26 +5,15 @@ const solc = require('solc')
 import * as path from 'path'
 import * as chokidar from 'chokidar'
 
-/*
-const baseArgs = 2;
-const fileSettings = {
-    encoding: 'utf8'
-};
-
-if (process.argv.length < baseArgs + 2) {
-    console.log("Usage: \n" + process.argv[1] + ' pathToFileToCompile outputFolder');
-    process.exit(1);
-}
-*/
 
 type AbiCollection = any;
 
 const globSuffix = '/**/*.sol';
 
 // basicly this is autoloading - it's needed because solcjs doesn't resolve solidity files by itself
-const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: FilePath) => {
+const findImports = (rootDir: FilePath) => (importPath: FilePath) => {
     let resolveFilename = (filePath: FilePath) => {
-        let tmpPath = rootDir + '/' + filePath + (filePath.endsWith(fileExtension) ? '' : fileExtension);
+        let tmpPath = rootDir + '/' + filePath;
         if (fileExists(tmpPath)) {
             return tmpPath;
         }
@@ -34,7 +23,7 @@ const findImports = (rootDir: FilePath, fileExtension: string) => (importPath: F
         }
 
         try {
-            return require.resolve(filePath + '.sol')
+            return require.resolve(filePath)
         } catch (e) {
             return null
         }
@@ -70,7 +59,7 @@ const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
         }
     }
 
-    let compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory, '.sol')));
+    let compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory)));
     let contract = compiled.contracts && compiled.contracts[contractName];
 
     if(!contract) {
@@ -116,10 +105,3 @@ export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFold
 
     return watcher;
 }
-
-
-/*
-(() => {
-    main(process.argv[2], process.argv[3])
-})();
-*/

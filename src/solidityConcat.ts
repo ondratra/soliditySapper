@@ -29,15 +29,14 @@ interface IImportResults {
 }
 
 
-async function findSolidityFile(relativeFolder: FilePath, importText: string, fileExtension: string = '.sol'): Promise<string> {
-    //(filePath.endsWith(fileExtension) ? '' : fileExtension);
+async function findSolidityFile(relativeFolder: FilePath, importText: string): Promise<string> {
     if (importText.startsWith('.')) {
-        const filePath = path.normalize(`${relativeFolder}/${importText}${fileExtension}`)
+        const filePath = path.normalize(`${relativeFolder}/${importText}`)
         return fileExists(filePath) ? filePath : null
     }
 
     try {
-        return require.resolve(`${importText}${fileExtension}`)
+        return require.resolve(importText)
     } catch (e) {
         return null
     }
@@ -48,6 +47,10 @@ const importLinesReducer = (dependentFilePath: FilePath) => async (accumulatorPr
     const filesFolder = path.dirname(dependentFilePath)
 
     const importPath = await findSolidityFile(filesFolder, item)
+
+    if (!importPath) {
+        throw `Cannot find file '${item}' for import requested in ${dependentFilePath}`
+    }
 
     if (accumulator.usedFiles[importPath]) {
         return accumulator
