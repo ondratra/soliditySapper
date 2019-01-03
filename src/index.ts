@@ -1,10 +1,10 @@
 import {build as tsxBuild, watch as tsxWatch, BuildWatchTsxOptions} from './tsxCompiler';
 import {build as solBuild, watch as solWatch} from './solidityCompiler';
-import {build as solConcatBuild} from './solidityConcat'
+import {build as solConcatBuild, watch as solConcatWatch} from './solidityConcat'
 import {build as cssTypeBuild, watch as cssTypeWatch, BuildWatchCssTypeOptions} from './cssTypeCompiler';
 //import yargsa from 'yargs';
 
-export {tsxBuild, tsxWatch, solBuild, solWatch, solConcatBuild, cssTypeBuild, cssTypeWatch};
+export {tsxBuild, tsxWatch, solBuild, solWatch, solConcatBuild, solConcatWatch, cssTypeBuild, cssTypeWatch};
 
 const yargsLib = require('yargs');
 
