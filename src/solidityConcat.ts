@@ -61,7 +61,7 @@ const importLinesReducer = (dependentFilePath: FilePath) => async (accumulatorPr
 
     // TODO: handle circular dependencies
 
-    const {usedFiles, code} = await searchForImports(importPath)
+    const {usedFiles, code} = await searchForImports(importPath, accumulator.usedFiles)
     return {
         usedFiles: {
             ...accumulator.usedFiles,
@@ -72,7 +72,7 @@ const importLinesReducer = (dependentFilePath: FilePath) => async (accumulatorPr
     }
 }
 
-async function searchForImports(filePath: FilePath): Promise<IImportResults> {
+async function searchForImports(filePath: FilePath, usedFiles = {}): Promise<IImportResults> {
     const content = readFile(filePath)
     const importRegex = /^import ['"](.*)['"];$/mg
 
@@ -84,9 +84,13 @@ async function searchForImports(filePath: FilePath): Promise<IImportResults> {
         importLines.push(matchOne[1])
     }
 
-    const {usedFiles, code: importCode} = await importLines.reduce(importLinesReducer(filePath), Promise.resolve({usedFiles: {}, code: ''}))
+    const {usedFiles: filesInner, code: importCode} = await importLines.reduce(importLinesReducer(filePath), Promise.resolve({usedFiles, code: ''}))
 
     const resultCode = importCode + content.replace(importRegex, '')
+    const resultUsedFiles = {
+        ...usedFiles,
+        ...filesInner
+    }
 
-    return {usedFiles, code: resultCode}
+    return {usedFiles: resultUsedFiles, code: resultCode}
 }
