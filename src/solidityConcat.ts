@@ -17,8 +17,10 @@ export async function build(sourcePath: FilePath, outputFolder: FilePath) {
     const {code} = await searchForImports(sourcePath)
     const contractName = path.basename(sourcePath, path.extname(sourcePath))
 
+    const resultCode = summarizeExperimentalPragma(code)
+
     const outputFile = outputFolder + '/' + contractName + '.sol'
-    writeFile(outputFile, code);
+    writeFile(outputFile, resultCode);
 }
 
 interface IImportResults {
@@ -93,4 +95,22 @@ async function searchForImports(filePath: FilePath, usedFiles = {}): Promise<IIm
     }
 
     return {usedFiles: resultUsedFiles, code: resultCode}
+}
+
+function summarizeExperimentalPragma(code: string) {
+    const importRegex = /^pragma experimental (.*);$/mg
+
+    // due to missing matchAll() support in JS we need to iterate over regexpt match results
+    //const importLines = matchAll(content, importRegex) // uncomment after matchAll available in ES
+    const pragma = []
+    let matchOne
+    while ((matchOne = importRegex.exec(code)) !== null) {
+        pragma.push(matchOne[1])
+    }
+
+    const uniqueNames = [...new Set(pragma)]
+    const newPragmas = uniqueNames.map(item => `pragma experimental ${item};`)
+    const resultCode = newPragmas.join('\n') + '\n' + code.replace(importRegex, '')
+
+    return resultCode
 }
