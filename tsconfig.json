@@ -8,6 +8,7 @@
         "jsxFactory": "h",
         "lib": ["es2017", "dom"],
         "downlevelIteration": true,
+        "allowSyntheticDefaultImports": true,
 
         "outDir": "./dist/",
         "declaration": true

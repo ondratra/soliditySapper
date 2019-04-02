@@ -1,6 +1,6 @@
 {
   "name": "soliditySapper",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
@@ -12,7 +12,7 @@
   "bin": "./dist/index.js",
   "dependencies": {
     "@types/chokidar": "^1.7.5",
-    "@types/node": "^9.6.5",
+    "@types/node": "^10.0.0",
     "@types/yargs": "^11.0.0",
     "browserify": "^16.2.2",
     "chokidar": "^2.0.4",
@@ -20,13 +20,16 @@
     "errorify": "^0.3.1",
     "postcss-cssnext": "^3.1.0",
     "preact": "^8.2.9",
+    "solc": "^0.5.7",
     "tsify": "^4.0.0",
     "typed-css-modules": "^0.3.4",
-    "typescript": "^2.8.3",
+    "typescript": "^3.4.1",
     "watchify": "^3.11.0",
+    "web3x": "^3.0.7",
     "yargs": "^11.0.0"
   },
   "peerDependencies": {
-    "solc": ">=0.4.24"
+    "solc": ">=0.4.24",
+    "web3x": "^3.0.0"
   }
 }
