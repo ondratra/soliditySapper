@@ -6,7 +6,7 @@ interface IDirectory<T> {
 
 type IMeasurement = IDirectory<IDirectory<number[]>>
 
-export default class GasAnalytics {
+export class GasAnalytics {
 
     private measurements: IMeasurement = {}
 

@@ -7,7 +7,7 @@ import * as http from "http"
 export const autominingBlockTime = 0.1;
 
 
-export default async function ethereumSimulator(): Promise<Eth> {
+export async function ethereumSimulator(): Promise<Eth> {
     const Ganache = require('ganache-core');
     const legacyProvider = Ganache.provider({
         blocktime: autominingBlockTime, // turns on automining
