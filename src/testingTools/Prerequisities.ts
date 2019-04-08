@@ -9,5 +9,4 @@ export interface IPrerequisities {
         [key: string]: string
     }
     gasAnalytics: GasAnalytics
-    //globals: any
 }

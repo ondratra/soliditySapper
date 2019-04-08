@@ -41,8 +41,7 @@ export class ContractServant {
     private static nameDelimeter = ':'
 
     public blockTime: number
-    //public web3: Web3
-    public eth: any
+    public eth: Eth
     public compiledContracts: ICompiledContracts
 
 
@@ -114,9 +113,10 @@ export class ContractServant {
         return {address, transactionHash}
     }
 
-    public async waitForTransactionMining(transactionHash: string) {
+    public async waitForTransactionMining(transactionHash: string): Promise<Address> {
         while (true) {
-            const receipt: any = await this.eth.getTransactionReceipt(transactionHash)
+            //const receipt: any = await this.eth.getTransactionReceipt(transactionHash)
+            const receipt = await this.eth.getTransactionReceipt(transactionHash)
             if (receipt && receipt.contractAddress) {
                 return receipt.contractAddress
             }

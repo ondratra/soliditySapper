@@ -14,7 +14,7 @@ export class GasAnalytics {
 
     }
 
-    public async recordTransaction(namespace: string, name: string, transactionHash: string) {
+    public async recordTransaction(namespace: string, name: string, transactionHash: string): Promise<void> {
         const receipt = await this.eth.getTransactionReceipt(transactionHash)
 
         this.measurements[namespace] = this.measurements[namespace] || {}
@@ -23,7 +23,7 @@ export class GasAnalytics {
         this.measurements[namespace][name].push(receipt.gasUsed)
     }
 
-    public printMeasurements() {
+    public printMeasurements(): void {
         const lines: string[] = []
 
         Object.keys(this.measurements).forEach(namespace => {
