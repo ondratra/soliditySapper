@@ -4,7 +4,7 @@ import * as chokidar from 'chokidar'
 
 const globSuffix = '/**/*.sol';
 
-export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFolder: FilePath) {
+export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFolder: FilePath): chokidar.FSWatcher {
 
     let watcher = chokidar.watch([watchDirectory + globSuffix])
         .on('add', () => build(sourcePath, outputFolder))
@@ -13,7 +13,7 @@ export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFold
     return watcher;
 }
 
-export async function build(sourcePath: FilePath, outputFolder: FilePath) {
+export async function build(sourcePath: FilePath, outputFolder: FilePath): Promise<FilePath> {
     const {code} = await searchForImports(sourcePath)
     const contractName = path.basename(sourcePath, path.extname(sourcePath))
 
@@ -21,6 +21,8 @@ export async function build(sourcePath: FilePath, outputFolder: FilePath) {
 
     const outputFile = outputFolder + '/' + contractName + '.sol'
     writeFile(outputFile, resultCode);
+
+    return outputFile
 }
 
 interface IImportResults {

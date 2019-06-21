@@ -10,10 +10,14 @@ type AbiCollection = any;
 
 const globSuffix = '/**/*.sol';
 
+interface IRefreshCallback {
+    (): Promise<null | FilePath>
+}
+
 // basicly this is autoloading - it's needed because solcjs doesn't resolve solidity files by itself
 const findImports = (rootDir: FilePath) => (importPath: FilePath) => {
-    let resolveFilename = (filePath: FilePath) => {
-        let tmpPath = rootDir + '/' + filePath;
+    const resolveFilename = (filePath: FilePath) => {
+        const tmpPath = rootDir + '/' + filePath;
         if (fileExists(tmpPath)) {
             return tmpPath;
         }
@@ -30,7 +34,7 @@ const findImports = (rootDir: FilePath) => (importPath: FilePath) => {
     }
 
 
-    let filename = resolveFilename(importPath);
+    const filename = resolveFilename(importPath);
     if (filename) {
         return {
             contents: readFile(filename)
@@ -42,8 +46,8 @@ const findImports = (rootDir: FilePath) => (importPath: FilePath) => {
 
 
 const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
-    let sourceDirectory = path.dirname(sourcePath);
-    let input = {
+    const sourceDirectory = path.dirname(sourcePath);
+    const input = {
         language: 'Solidity',
         sources: {
             [contractName]: {
@@ -59,8 +63,8 @@ const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
         }
     }
 
-    let compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory)));
-    let contract = compiled.contracts && compiled.contracts[contractName];
+    const compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory)));
+    const contract = compiled.contracts && compiled.contracts[contractName];
 
     if(!contract) {
         console.log(compiled)
@@ -82,12 +86,12 @@ const createAbi = (compiledContracts: AbiCollection) => {
 };
 
 export function build(sourcePath: FilePath, outputFolder: FilePath) {
-    let contractName = path.basename(sourcePath, path.extname(sourcePath));
+    const contractName = path.basename(sourcePath, path.extname(sourcePath));
 
-    let compiledContracts = compileContracts(sourcePath, contractName);
-    let abis = createAbi(compiledContracts);
+    const compiledContracts = compileContracts(sourcePath, contractName);
+    const abis = createAbi(compiledContracts);
 
-    let outputFiles = [
+    const outputFiles = [
         outputFolder + '/' + contractName + '.json',
         outputFolder + '/' + contractName + '_abi.json'
     ];
@@ -97,11 +101,20 @@ export function build(sourcePath: FilePath, outputFolder: FilePath) {
     return outputFiles;
 }
 
-export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFolder: FilePath) {
+export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFolder: FilePath, refreshCallback?: IRefreshCallback) {
+    const refresh = async () => {
+        const newSourcePath = refreshCallback && await refreshCallback()
+        if (newSourcePath) {
+            build(newSourcePath, outputFolder)
+            return
+        }
 
-    let watcher = chokidar.watch([watchDirectory + globSuffix])
-        .on('add', () => build(sourcePath, outputFolder))
-        .on('change', () => build(sourcePath, outputFolder));
+        build(sourcePath, outputFolder)
+    }
+
+    const watcher = chokidar.watch([watchDirectory + globSuffix])
+        .on('add', refresh)
+        .on('change', refresh);
 
     return watcher;
 }
