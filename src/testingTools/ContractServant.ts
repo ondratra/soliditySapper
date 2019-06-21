@@ -102,11 +102,11 @@ export class ContractServant {
         return transactionHash
     }
 
-    public async easyDeploy(contractName: string, creatorAddress: Address, constructorParameters: unknown[] = [], libraries: ILibraries = {}): Promise<{address: Address, transactionHash: string}> {
+    public async easyDeploy(contractName: string, creatorAddress: Address, constructorParameters: unknown[] = [], libraries: ILibraries = {}, transactionSettings: Object = {}): Promise<{address: Address, transactionHash: string}> {
         const compiledContract = this.getCompiledContract(contractName)
         const contract = await this.createContractFromCompiled(compiledContract)
 
-        const transactionHash = await this.deployContract(compiledContract, creatorAddress, constructorParameters, {}, libraries)
+        const transactionHash = await this.deployContract(compiledContract, creatorAddress, constructorParameters, transactionSettings, libraries)
 
         const address = await this.waitForTransactionMining(transactionHash)
 
