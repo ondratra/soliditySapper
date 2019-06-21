@@ -66,7 +66,7 @@ const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
     const compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory)));
     const contract = compiled.contracts && compiled.contracts[contractName];
 
-    if (compiled && compiled.errors) {
+    if (!contract && compiled && compiled.errors) {
         console.log('COMPILE ERROR: unknown error', compiled.errors);
         return
     }
