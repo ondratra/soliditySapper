@@ -66,6 +66,11 @@ const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
     const compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory)));
     const contract = compiled.contracts && compiled.contracts[contractName];
 
+    if (compiled && compiled.errors) {
+        console.log('COMPILE ERROR: unknown error', compiled.errors);
+        return
+    }
+
     if(!contract) {
         console.log(compiled)
         console.log('COMPILE ERROR: unknown error');
@@ -85,10 +90,13 @@ const createAbi = (compiledContracts: AbiCollection) => {
     }, {} as AbiCollection)
 };
 
-export function build(sourcePath: FilePath, outputFolder: FilePath) {
+export function build(sourcePath: FilePath, outputFolder: FilePath): string[] {
     const contractName = path.basename(sourcePath, path.extname(sourcePath));
 
     const compiledContracts = compileContracts(sourcePath, contractName);
+    if (!compiledContracts) {
+        return []
+    }
     const abis = createAbi(compiledContracts);
 
     const outputFiles = [
@@ -101,7 +109,7 @@ export function build(sourcePath: FilePath, outputFolder: FilePath) {
     return outputFiles;
 }
 
-export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFolder: FilePath, refreshCallback?: IRefreshCallback) {
+export function watch(watchDirectory: FilePath, sourcePath: FilePath, outputFolder: FilePath, refreshCallback?: IRefreshCallback): chokidar.FSWatcher {
     const refresh = async () => {
         const newSourcePath = refreshCallback && await refreshCallback()
         if (newSourcePath) {
