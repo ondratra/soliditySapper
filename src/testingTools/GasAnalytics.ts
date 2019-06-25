@@ -1,4 +1,5 @@
 import {Eth} from 'web3x/eth'
+import {Tx} from 'web3x/contract/tx'
 
 interface IDirectory<T> {
     [key: string]: T
@@ -17,10 +18,20 @@ export class GasAnalytics {
     public async recordTransaction(namespace: string, name: string, transactionHash: string): Promise<void> {
         const receipt = await this.eth.getTransactionReceipt(transactionHash)
 
+        this.recordValue(namespace, name, receipt.gasUsed)
+    }
+
+    public async recordEstimation(namespace: string, name: string, transaction: Tx): Promise<void> {
+        const gasEstimation = await transaction.estimateGas()
+
+        this.recordValue(namespace, name, gasEstimation)
+    }
+
+    private recordValue(namespace: string, name: string, gasUsed: number) {
         this.measurements[namespace] = this.measurements[namespace] || {}
         this.measurements[namespace][name] = this.measurements[namespace][name] || []
 
-        this.measurements[namespace][name].push(receipt.gasUsed)
+        this.measurements[namespace][name].push(gasUsed)
     }
 
     public printMeasurements(): void {
