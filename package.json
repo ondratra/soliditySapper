@@ -1,6 +1,6 @@
 {
   "name": "soliditySapper",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
@@ -26,11 +26,11 @@
     "typed-css-modules": "^0.3.4",
     "typescript": "^3.4.1",
     "watchify": "^3.11.0",
-    "web3x": "^3.0.7",
+    "web3x": "^4.0.0",
     "yargs": "^11.0.0"
   },
   "peerDependencies": {
     "solc": ">=0.4.24",
-    "web3x": "^3.0.0"
+    "web3x": "^4.0.0"
   }
 }
