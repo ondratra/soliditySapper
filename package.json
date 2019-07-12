@@ -1,6 +1,6 @@
 {
   "name": "soliditySapper",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
@@ -13,7 +13,10 @@
   "dependencies": {
     "@types/chokidar": "^1.7.5",
     "@types/node": "^10.0.0",
+    "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.4",
     "@types/yargs": "^11.0.0",
+    "awesome-aliasify": "^0.0.13",
     "browserify": "^16.2.2",
     "chokidar": "^2.0.4",
     "css-modulesify": "^0.28.0",
@@ -21,6 +24,7 @@
     "ganache-core": "^2.5.4",
     "postcss-cssnext": "^3.1.0",
     "preact": "^8.2.9",
+    "preact-compat": "^3.19.0",
     "solc": "^0.5.7",
     "tsify": "^4.0.0",
     "typed-css-modules": "^0.3.4",
