@@ -13,7 +13,7 @@ const browserify = require('browserify');
 const watchify = require('watchify');
 const tsify = require('tsify');
 const errorify = require('errorify');
-const aliasify = require('awesome-aliasify');
+const pathmodify = require('pathmodify')
 const cssModulesify = require('css-modulesify');
 const yargsLib = require('yargs');
 
@@ -22,14 +22,19 @@ const yargsLib = require('yargs');
 function pluginsCommon(outputDir: FilePath, outputFile: FilePath, tsconfig: FilePath = "") {
     tsconfig = tsconfig || __dirname + '/../tsconfig.json';
     const tsconfigContent = JSON.parse(readFile(tsconfig))
-    const tsconfigRelevant = tsconfigContent.compilerOptions;
 
     return (browserifyInstance: BrowserifyInstance) => browserifyInstance
         .plugin(errorify, {})
-        .plugin(aliasify, {
-            aliases: (tsconfigContent.aliasify && tsconfigContent.aliasify.aliases) || {}
+        .plugin(pathmodify, {
+            mods: tsconfigContent.aliases.map((item: string[]) => {
+                if (item[0] == 'id') {
+                    return pathmodify.mod.id(item[1], item[2])
+                }
+
+                throw `Unkown alias module '${item[0]}'`
+            })
         })
-        .plugin(tsify, tsconfigRelevant)
+        .plugin(tsify, tsconfigContent.compilerOptions)
         .plugin(cssModulesify, {
             rootDir: __dirname,
             output: outputDir + '/' + outputFile + '.css',

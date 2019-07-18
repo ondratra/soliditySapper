@@ -1,6 +1,6 @@
 {
   "name": "soliditySapper",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
@@ -14,12 +14,12 @@
     "@types/chokidar": "^1.7.5",
     "@types/node": "^10.0.0",
     "@types/yargs": "^11.0.0",
-    "awesome-aliasify": "^0.0.13",
     "browserify": "^16.2.2",
     "chokidar": "^2.0.4",
     "css-modulesify": "^0.28.0",
     "errorify": "^0.3.1",
     "ganache-core": "^2.5.4",
+    "pathmodify": "^0.5.0",
     "postcss-cssnext": "^3.1.0",
     "preact": "^10.0.0-rc.0",
     "solc": "^0.5.7",
