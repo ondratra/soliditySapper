@@ -1,9 +1,5 @@
-"use strict";
-
-// run:
-// node --harmony-async-await build.js
-
 import {FilePath, readFile} from './misc';
+import {CompilerOptions} from 'typescript'
 
 type BrowserifyInstance = any;
 
@@ -16,40 +12,72 @@ const errorify = require('errorify');
 const pathmodify = require('pathmodify')
 const cssModulesify = require('css-modulesify');
 const yargsLib = require('yargs');
+const tinyify = require('tinyify')
 
+
+interface ITsConfig {
+    compilerOptions: CompilerOptions
+    extends?: string
+    aliases?: [string, string, string][]
+}
+
+function loadTsConfig(filePath: FilePath): ITsConfig {
+    const tmpPath = filePath || __dirname + '/../tsconfig.json';
+    const content = JSON.parse(readFile(tmpPath))
+
+    if (!content.extends) {
+        return content
+    }
+
+    const pathAbsolute = content.extends.charAt(0) == '/'
+    const extendPath = pathAbsolute ? content : path.join(path.dirname(tmpPath), content.extends)
+
+    const baseContent = loadTsConfig(extendPath)
+    const result = {...baseContent, ...content}
+
+    return result
+}
 
 /////////////////// Browserify plugins /////////////////////////////////////////
-function pluginsCommon(outputDir: FilePath, outputFile: FilePath, tsconfig: FilePath = "") {
-    tsconfig = tsconfig || __dirname + '/../tsconfig.json';
-    const tsconfigContent = JSON.parse(readFile(tsconfig))
+function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuildWatchTsxOptions, tsconfig: ITsConfig) {
+    const result = (browserifyInstance: BrowserifyInstance) => {
+        const instance = browserifyInstance
+            .plugin(errorify, {})
+            .plugin(pathmodify, {
+                mods: tsconfig.aliases.map((item: string[]) => {
+                    if (item[0] == 'id') {
+                        return pathmodify.mod.id(item[1], item[2])
+                    }
 
-    return (browserifyInstance: BrowserifyInstance) => browserifyInstance
-        .plugin(errorify, {})
-        .plugin(pathmodify, {
-            mods: tsconfigContent.aliases.map((item: string[]) => {
-                if (item[0] == 'id') {
-                    return pathmodify.mod.id(item[1], item[2])
-                }
-
-                throw `Unkown alias module '${item[0]}'`
+                    throw `Unkown alias module '${item[0]}'`
+                })
             })
-        })
-        .plugin(tsify, tsconfigContent.compilerOptions)
-        .plugin(cssModulesify, {
+            .plugin(tsify, tsconfig.compilerOptions)
+
+        if (options.tinyify) {
+            instance.plugin(tinyify, {})
+        }
+
+        instance.plugin(cssModulesify, {
             rootDir: __dirname,
             output: outputDir + '/' + outputFile + '.css',
             after: [
                 'postcss-cssnext'
             ]
         });
+
+        return instance
+    }
+
+    return result
 }
 
 function pluginsWatchify(outputDir: FilePath, outputFile: FilePath) {
     return (browserifyInstance: BrowserifyInstance) => browserifyInstance.plugin(watchify, {
-        ignoreWatch: ['**/node_modules/**']
+        ignoreWatch: ['**/node_modules/**'],
+        verbose: true
     }).on('update', function() {
         console.log('rebundling')
-        //browserifyInstance.bundle().pipe(fs.createWriteStream(jsOutputPath));
         browserifyBundle(outputDir, outputFile)(browserifyInstance);
     })
 }
@@ -62,38 +90,40 @@ function browserifyBundle(outputDir: FilePath, outputFile: FilePath) {
         .pipe(fs.createWriteStream(outputDir + '/' + outputFile + '.js'));
 }
 
-async function getBrowserify(inputRootDir: FilePath, sourceFile: FilePath) {
+async function getBrowserify(inputRootDir: FilePath, sourceFile: FilePath, options: IBuildWatchTsxOptions, tsconfig: ITsConfig) {
     return browserify({
-        debug: true,
+        debug: tsconfig.compilerOptions.declaration,
         //entries: [inputRootDir + "/" + sourceFile],
         entries: [sourceFile],
         cache: {},
         packageCache: {},
 
+
         // TODO: decide how to pass parameter
         basedir: inputRootDir
-    });
-
-    //return pluginsCommon(browserifyInstance);
+    })
 }
 
-export interface BuildWatchTsxOptions {
+export interface IBuildWatchTsxOptions {
     tsconfig: FilePath;
+    tinyify: boolean
 }
 
-export function build(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: BuildWatchTsxOptions) {
+export function build(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: IBuildWatchTsxOptions) {
     const outputFile = path.basename(inputFile, path.extname(inputFile));
+    const tsconfig = loadTsConfig(options.tsconfig)
 
-    return getBrowserify(inputRootDir, inputFile)
-        .then(pluginsCommon(outputDir, outputFile, options.tsconfig))
+    return getBrowserify(inputRootDir, inputFile, options, tsconfig)
+        .then(pluginsCommon(outputDir, outputFile, options, tsconfig))
         .then(browserifyBundle(outputDir, outputFile));
 }
 
-export function watch(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: BuildWatchTsxOptions) {
+export function watch(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: IBuildWatchTsxOptions) {
     const outputFile = path.basename(inputFile, path.extname(inputFile));
+    const tsconfig = loadTsConfig(options.tsconfig)
 
-    return getBrowserify(inputRootDir, inputFile)
-        .then(pluginsCommon(outputDir, outputFile, options.tsconfig))
+    return getBrowserify(inputRootDir, inputFile, options, tsconfig)
+        .then(pluginsCommon(outputDir, outputFile, options, tsconfig))
         .then(pluginsWatchify(outputDir, outputFile))
         .then(browserifyBundle(outputDir, outputFile));
 }

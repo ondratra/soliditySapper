@@ -1,4 +1,4 @@
-import {build as tsxBuild, watch as tsxWatch, BuildWatchTsxOptions} from './tsxCompiler'
+import {build as tsxBuild, watch as tsxWatch, IBuildWatchTsxOptions} from './tsxCompiler'
 import {build as solBuild, watch as solWatch} from './solidityCompiler'
 import {build as solConcatBuild, watch as solConcatWatch} from './solidityConcat'
 import {build as cssTypeBuild, watch as cssTypeWatch, BuildWatchCssTypeOptions} from './cssTypeCompiler'
@@ -70,14 +70,19 @@ const tsxBuildWatchArgs = (yargs: yargArguments) => {
             type: 'string',
             describe: 'path to custom tsconfig.json'
         })
+        .option('tinify', {
+            type: 'boolean',
+            describe: 'minimize size of result bundle'
+        })
 }
 
 interface BuildWatchTsx {
-    (a: string, b: string, c: string, d: BuildWatchTsxOptions): void
+    (a: string, b: string, c: string, d: IBuildWatchTsxOptions): void
 }
 const tsxWrapper = (func: BuildWatchTsx) => (yargs: yargArguments) => {
     let tmp = {
-        tsconfig: yargs.tsconfig
+        tsconfig: yargs.tsconfig,
+        tinyify: yargs.tinyify
     }
     func(yargs.inputRootDir, yargs.inputFile, yargs.outputDirectory, tmp)
 }
