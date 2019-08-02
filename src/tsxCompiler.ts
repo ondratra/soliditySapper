@@ -59,11 +59,12 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
         }
 
         instance.plugin(cssModulesify, {
-            rootDir: __dirname,
+            rootDir: options.projectRootDir,
             output: outputDir + '/' + outputFile + '.css',
             after: [
                 'postcss-cssnext'
             ],
+            generateScopedName: options.cssGenerateScopedName,
             global: true
         });
 
@@ -107,6 +108,8 @@ async function getBrowserify(inputRootDir: FilePath, sourceFile: FilePath, optio
 export interface IBuildWatchTsxOptions {
     tsconfig: FilePath;
     tinyify: boolean
+    projectRootDir: FilePath
+    cssGenerateScopedName?: (name: string, filename: string, css: string) => string
 }
 
 export function build(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: IBuildWatchTsxOptions) {

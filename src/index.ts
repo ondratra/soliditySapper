@@ -74,6 +74,10 @@ const tsxBuildWatchArgs = (yargs: yargArguments) => {
             type: 'boolean',
             describe: 'minimize size of result bundle'
         })
+        .options('projectRootDir', {
+            type: 'string',
+            describe: 'path to projects\'s root directory'
+        })
 }
 
 interface BuildWatchTsx {
@@ -82,7 +86,8 @@ interface BuildWatchTsx {
 const tsxWrapper = (func: BuildWatchTsx) => (yargs: yargArguments) => {
     let tmp = {
         tsconfig: yargs.tsconfig,
-        tinyify: yargs.tinyify
+        tinyify: yargs.tinyify,
+        projectRootDir: yargs.projectRootDir
     }
     func(yargs.inputRootDir, yargs.inputFile, yargs.outputDirectory, tmp)
 }
