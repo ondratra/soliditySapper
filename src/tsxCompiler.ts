@@ -63,7 +63,8 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
             output: outputDir + '/' + outputFile + '.css',
             after: [
                 'postcss-cssnext'
-            ]
+            ],
+            global: true
         });
 
         return instance
@@ -93,7 +94,6 @@ function browserifyBundle(outputDir: FilePath, outputFile: FilePath) {
 async function getBrowserify(inputRootDir: FilePath, sourceFile: FilePath, options: IBuildWatchTsxOptions, tsconfig: ITsConfig) {
     return browserify({
         debug: tsconfig.compilerOptions.declaration,
-        //entries: [inputRootDir + "/" + sourceFile],
         entries: [sourceFile],
         cache: {},
         packageCache: {},
