@@ -62,10 +62,12 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
             rootDir: options.projectRootDir,
             output: outputDir + '/' + outputFile + '.css',
             after: [
-                'postcss-cssnext'
+                'postcss-cssnext',
+                'postcss-url'
             ],
             generateScopedName: options.cssGenerateScopedName,
-            global: true
+            global: true,
+            ...(options.cssModulesifyExtraOptions || {})
         });
 
         return instance
@@ -110,6 +112,7 @@ export interface IBuildWatchTsxOptions {
     tinyify: boolean
     projectRootDir: FilePath
     cssGenerateScopedName?: (name: string, filename: string, css: string) => string
+    cssModulesifyExtraOptions?: unknown
 }
 
 export function build(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: IBuildWatchTsxOptions) {

@@ -1,6 +1,6 @@
 {
   "name": "soliditySapper",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
@@ -21,6 +21,7 @@
     "ganache-core": "^2.5.4",
     "pathmodify": "^0.5.0",
     "postcss-cssnext": "^3.1.0",
+    "postcss-url": "^8.0.0",
     "preact": "^10.0.0-rc.0",
     "solc": "^0.5.7",
     "tinyify": "^2.5.1",
