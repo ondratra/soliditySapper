@@ -6268,9 +6268,9 @@ postcss@^7.0.2:
     supports-color "^6.1.0"
 
 preact@^10.0.0-rc.0:
-  version "10.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.0.0-rc.1.tgz#bae4419f8e289c327504d4ee6e734c377983548c"
-  integrity sha512-DyG8ySCbrQZ8w4cSyxnofM6yH/hzyYLHmIrE3xL1FjSCX4DpvVmP7DTpkV535FSQX0d2zOscb7DCIY+crBtxow==
+  version "10.0.5"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.0.5.tgz#16f0bcd77241693e710778069e703217dd497867"
+  integrity sha512-62+J+GTrv3Uhp6DefqZTel6VYcdUA1zqHO7gjQSKdOwkU2sNOp/Vl6Zf2A3hIWV5EBgjeDA8gsOn6dmB3I1Dvg==
 
 precond@0.2:
   version "0.2.3"
