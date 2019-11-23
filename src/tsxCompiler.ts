@@ -49,6 +49,15 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
                         return pathmodify.mod.id(item[1], item[2])
                     }
 
+                    if (item[0] == 'dir') {
+                        return pathmodify.mod.dir(item[1], item[2])
+                    }
+
+                    if (item[0] == 're') {
+                        const regexp = (item[1] as any) instanceof RegExp ? item[1] : new RegExp(item[1])
+                        return pathmodify.mod.re(regexp, item[2])
+                    }
+console.log('asdf')
                     throw `Unkown alias module '${item[0]}'`
                 })
             })
