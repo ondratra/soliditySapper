@@ -14,6 +14,11 @@ const cssModulesify = require('css-modulesify');
 const yargsLib = require('yargs');
 const tinyify = require('tinyify')
 
+// custom tinyify
+const commonShake = require('common-shakeify')
+const uglify = require('minify-stream')
+//const envify = require('./private_modules/envify/custom')
+const uglifyify = require('uglifyify')
 
 interface ITsConfig {
     compilerOptions: CompilerOptions
@@ -57,14 +62,18 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
                         const regexp = (item[1] as any) instanceof RegExp ? item[1] : new RegExp(item[1])
                         return pathmodify.mod.re(regexp, item[2])
                     }
-console.log('asdf')
+
                     throw `Unkown alias module '${item[0]}'`
                 })
             })
             .plugin(tsify, tsconfig.compilerOptions)
 
         if (options.tinyify) {
-            instance.plugin(tinyify, {})
+            customPluginTinyify(instance)
+        }
+
+        if (options.external) {
+            instance.external(options.external)
         }
 
         instance.plugin(cssModulesify, {
@@ -83,6 +92,44 @@ console.log('asdf')
     }
 
     return result
+}
+
+function customPluginTinyify(browserifyInstance: BrowserifyInstance) {
+    const env = Object.assign({
+        NODE_ENV: 'production'
+    }, process.env)
+
+    // Replace `process.env.NODE_ENV` with "production".
+    //browserifyInstance.transform(envify(env), {global: true})
+
+    // Remove dead code.
+    browserifyInstance.transform(uglifyify, {
+        global: true,
+        toplevel: true,
+        // No need to mangle here, will do that at the end.
+
+        exts: ['.tsx', '.ts', '.js'],
+
+        mangle: false,
+        output: {
+            ascii_only: true
+        }
+    })
+
+    browserifyInstance.plugin(commonShake)
+
+    // minify result
+    const parameters = {
+        output: {
+            ascii_only: true
+        },
+        mangle: {
+            safari10: true
+        },
+        sourceMap: false
+    }
+    browserifyInstance.pipeline.get('pack').push(uglify(parameters))
+
 }
 
 function pluginsWatchify(outputDir: FilePath, outputFile: FilePath) {
@@ -104,8 +151,10 @@ function browserifyBundle(outputDir: FilePath, outputFile: FilePath) {
 }
 
 async function getBrowserify(inputRootDir: FilePath, sourceFile: FilePath, options: IBuildWatchTsxOptions, tsconfig: ITsConfig) {
-    return browserify({
-        debug: tsconfig.compilerOptions.declaration,
+    const parameters = {
+        //debug: tsconfig.compilerOptions.declaration,
+        debug: options.debug || false,
+        fullPaths: options.fullPaths || false,
         entries: [sourceFile],
         cache: {},
         packageCache: {},
@@ -113,15 +162,21 @@ async function getBrowserify(inputRootDir: FilePath, sourceFile: FilePath, optio
 
         // TODO: decide how to pass parameter
         basedir: inputRootDir
-    })
+    }
+    const instance = browserify(parameters)
+
+    return instance
 }
 
 export interface IBuildWatchTsxOptions {
     tsconfig: FilePath;
-    tinyify: boolean
     projectRootDir: FilePath
     cssGenerateScopedName?: (name: string, filename: string, css: string) => string
-    cssModulesifyExtraOptions?: unknown
+    cssModulesifyExtraOptions?: Object
+    external?: string[]
+    fullPaths?: boolean // default false
+    debug?: boolean // default false
+    tinyify?: boolean // default false
 }
 
 export function build(inputRootDir: FilePath, inputFile: FilePath, outputDir: FilePath, options: IBuildWatchTsxOptions) {

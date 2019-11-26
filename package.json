@@ -1,6 +1,6 @@
 {
   "name": "soliditySapper",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
