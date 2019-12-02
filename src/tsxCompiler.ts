@@ -66,7 +66,10 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
                     throw `Unkown alias module '${item[0]}'`
                 })
             })
-            .plugin(tsify, tsconfig.compilerOptions)
+            .plugin(tsify, {
+                global: true,
+                ...tsconfig.compilerOptions
+            })
 
         if (options.tinyify) {
             customPluginTinyify(instance)
