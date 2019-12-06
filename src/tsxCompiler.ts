@@ -91,12 +91,15 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
             global: true,
 
             'postcss-import': {
-                // postcss-import resolve not working as expected - let's define simple custom resolve
+                // postcss-import resolve not working as expected - let's define simple custom resolver to mitigate the issue
                 resolve: (id: string, basedir: string, importOptions: Object, currentFileName: string) => {
-                    if (id.startsWith('..')) {
+                    const isRelative = id.startsWith('.')
+
+                    if (isRelative && basedir.startsWith(options.projectRootDir)) {
                         return path.resolve(basedir, id)
                     }
-                    if (id.startsWith('.')) {
+
+                    if (isRelative) {
                         return path.join(options.projectRootDir, path.resolve(basedir, id))
                     }
 
