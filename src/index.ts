@@ -87,7 +87,7 @@ const tsxWrapper = (func: BuildWatchTsx) => (yargs: yargArguments) => {
     let tmp = {
         tsconfig: yargs.tsconfig,
         tinyify: yargs.tinyify,
-        projectRootDir: yargs.projectRootDir
+        projectRootDir: yargs.projectRootDir || process.cwd()
     }
     func(yargs.inputRootDir, yargs.inputFile, yargs.outputDirectory, tmp)
 }

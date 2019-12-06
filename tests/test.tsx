@@ -11,7 +11,12 @@ class Main extends Component<{}, {}> {
     }
 
     public render() {
-        return <div>Test</div>;
+        return <div className={styles.testContainer}>
+            Outer div
+
+            <p className={styles.testParagraph}>
+            </p>
+        </div>
     }
 }
 

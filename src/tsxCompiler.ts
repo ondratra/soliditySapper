@@ -3,15 +3,15 @@ import {CompilerOptions} from 'typescript'
 
 type BrowserifyInstance = any;
 
-const path = require('path');
-const fs = require('fs');
-const browserify = require('browserify');
-const watchify = require('watchify');
-const tsify = require('tsify');
-const errorify = require('errorify');
+const path = require('path')
+const fs = require('fs')
+const browserify = require('browserify')
+const watchify = require('watchify')
+const tsify = require('tsify')
+const errorify = require('errorify')
 const pathmodify = require('pathmodify')
-const cssModulesify = require('css-modulesify');
-const yargsLib = require('yargs');
+const cssModulesify = require('css-modulesify')
+const yargsLib = require('yargs')
 const tinyify = require('tinyify')
 
 // custom tinyify
@@ -49,7 +49,7 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
         const instance = browserifyInstance
             .plugin(errorify, {})
             .plugin(pathmodify, {
-                mods: tsconfig.aliases.map((item: string[]) => {
+                mods: (tsconfig.aliases || []).map((item: string[]) => {
                     if (item[0] == 'id') {
                         return pathmodify.mod.id(item[1], item[2])
                     }
@@ -82,14 +82,31 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
         instance.plugin(cssModulesify, {
             rootDir: options.projectRootDir,
             output: outputDir + '/' + outputFile + '.css',
-            after: [
-                'postcss-cssnext',
-                'postcss-url'
+            before: [
+                'postcss-import',
+                'postcss-preset-env',
+                'postcss-url',
             ],
             generateScopedName: options.cssGenerateScopedName,
             global: true,
+
+            'postcss-import': {
+                // postcss-import resolve not working as expected - let's define simple custom resolve
+                resolve: (id: string, basedir: string, importOptions: Object, currentFileName: string) => {
+                    if (id.startsWith('..')) {
+                        return path.resolve(basedir, id)
+                    }
+                    if (id.startsWith('.')) {
+                        return path.join(options.projectRootDir, path.resolve(basedir, id))
+                    }
+
+                    return path.resolve(basedir, id)
+                }
+
+            },
+
             ...(options.cssModulesifyExtraOptions || {})
-        });
+        })
 
         return instance
     }

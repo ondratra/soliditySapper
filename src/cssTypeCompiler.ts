@@ -1,4 +1,4 @@
-const DtsCreator = require('typed-css-modules');
+import DtsCreator from 'typed-css-modules';
 const chokidar = require('chokidar');
 const glob = require('glob');
 
@@ -19,7 +19,7 @@ export interface BuildWatchCssTypeOptions {
 export function build(srcDir: string, options = {}) {
     //const _dtsCreator = require('typed-css-modules');
     let dtsCreator = new DtsCreator({
-        srcDir
+        searchDir: srcDir
     });
 
     return glob(srcDir + globSuffix, {}, (error: any, files: string[]) => files.forEach(writeFile(dtsCreator)));
@@ -27,7 +27,7 @@ export function build(srcDir: string, options = {}) {
 
 export function watch(srcDir: string, options = {}) {
     let dtsCreator = new DtsCreator({
-        srcDir
+        searchDir: srcDir
     });
 
     let watcher = chokidar.watch([srcDir + globSuffix])

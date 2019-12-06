@@ -1,0 +1,6 @@
+@import '../test3.css';
+
+:root {
+    --primary-background-color: white;
+    --secondary-background-color: black;
+}

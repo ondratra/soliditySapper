@@ -1,7 +1,18 @@
-.testCssClass {
-    margin: 10px;
+@import "./test2.css";
+@import "./cssInFolder/cssInFolder1.css";
+
+@custom-selector :--heading h1, h2, h3, h4, h5, h6;
+
+:--heading {
+  background-image: image-set(url('img/dummy.png') 1x, url(img/dummy@2x.png) 2x);
 }
 
-.a  {
+.testContainer {
     margin: 10px;
+    color: --primary-color;
+}
+
+.testParagraph  {
+    padding: 10px;
+    color: --secondary-color;
 }
