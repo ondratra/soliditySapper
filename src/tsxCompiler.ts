@@ -19,6 +19,7 @@ const commonShake = require('common-shakeify')
 const uglify = require('minify-stream')
 //const envify = require('./private_modules/envify/custom')
 const uglifyify = require('uglifyify')
+const CleanCSS = require('clean-css')
 
 interface ITsConfig {
     compilerOptions: CompilerOptions
@@ -45,6 +46,8 @@ function loadTsConfig(filePath: FilePath): ITsConfig {
 
 /////////////////// Browserify plugins /////////////////////////////////////////
 function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuildWatchTsxOptions, tsconfig: ITsConfig) {
+    const cssOutputFile = outputDir + '/' + outputFile + '.css'
+
     const result = (browserifyInstance: BrowserifyInstance) => {
         const instance = browserifyInstance
             .plugin(errorify, {})
@@ -81,7 +84,6 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
 
         instance.plugin(cssModulesify, {
             rootDir: options.projectRootDir,
-            output: outputDir + '/' + outputFile + '.css',
             before: [
                 'postcss-import',
                 'postcss-preset-env',
@@ -109,6 +111,17 @@ function pluginsCommon(outputDir: FilePath, outputFile: FilePath, options: IBuil
             },
 
             ...(options.cssModulesifyExtraOptions || {})
+        }).on('css stream', (cssStream: any) => { // the true type ReadableStream<string> hasn't '.on()' from unkown reason
+            const cleanOptions = {
+                level: 2
+            }
+
+            let css = ''
+            cssStream.on('data', (chunk: string) => css += chunk)
+            cssStream.on('end', () => {
+                const cssObject = new CleanCSS(cleanOptions).minify(css)
+                fs.writeFileSync(cssOutputFile, cssObject.styles)
+            })
         })
 
         return instance

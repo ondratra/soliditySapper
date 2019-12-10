@@ -1,6 +1,6 @@
 {
   "name": "soliditySapper",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
@@ -17,6 +17,7 @@
     "browserify": "^16.2.2",
     "browserify-postcss": "^0.4.0",
     "chokidar": "^3.3.0",
+    "clean-css": "^4.2.1",
     "common-shakeify": "^0.6.2",
     "css-modulesify": "^0.28.0",
     "errorify": "^0.3.1",
