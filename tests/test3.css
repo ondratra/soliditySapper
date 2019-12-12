@@ -2,3 +2,7 @@
     --misc-color-1: yellow;
     --misc-color-2: brown;
 }
+
+.myUglyClass {
+    color: var(--misc-color-1);
+}

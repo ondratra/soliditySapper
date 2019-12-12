@@ -1,6 +1,10 @@
-@import '../test3.css';
+@import "../test3.css";
 
 :root {
     --primary-background-color: white;
     --secondary-background-color: black;
+}
+
+.myNiceClass {
+    background-color: var(--primary-background-color);
 }
