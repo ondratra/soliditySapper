@@ -5,7 +5,6 @@ const solc = require('solc')
 import * as path from 'path'
 import * as chokidar from 'chokidar'
 
-
 type AbiCollection = any;
 
 const globSuffix = '/**/*.sol';
@@ -63,7 +62,11 @@ const compileContracts = (sourcePath: FilePath, contractName: FilePath) => {
         }
     }
 
-    const compiled = JSON.parse(solc.compileStandardWrapper(JSON.stringify(input), findImports(sourceDirectory)));
+    const callbacks = {
+        import: findImports(sourceDirectory)
+    }
+
+    const compiled = JSON.parse(solc.compile(JSON.stringify(input), callbacks));
     const contract = compiled.contracts && compiled.contracts[contractName];
 
     if (!contract && compiled && compiled.errors) {
