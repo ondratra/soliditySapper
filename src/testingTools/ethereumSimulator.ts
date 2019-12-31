@@ -11,8 +11,8 @@ export async function ethereumSimulator(): Promise<Eth> {
     const Ganache = require('ganache-core');
     const legacyProvider = Ganache.provider({
         blocktime: autominingBlockTime, // turns on automining
-        default_balance_ether: 100
-
+        default_balance_ether: 100,
+        hardfork: 'istanbul',
     });
 
     //const provider = new HttpProvider('http://127.0.0.1:7545')

@@ -1,6 +1,6 @@
 {
   "name": "soliditySapper",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "license": "GPLv3",
   "scripts": {
     "build": "tsc",
@@ -21,7 +21,7 @@
     "common-shakeify": "^0.6.2",
     "css-modulesify": "^0.28.0",
     "errorify": "^0.3.1",
-    "ganache-core": "^2.5.4",
+    "ganache-core": "^2.9.1-beta.0",
     "minify-stream": "^1.2.1",
     "pathmodify": "^0.5.0",
     "postcss": "^7.0.25",
@@ -38,9 +38,5 @@
     "watchify": "^3.11.0",
     "web3x": "^4.0.0",
     "yargs": "^15.0.2"
-  },
-  "peerDependencies": {
-    "solc": ">=0.4.24",
-    "web3x": "^4.0.0"
   }
 }
